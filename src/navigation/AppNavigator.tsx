@@ -6,7 +6,7 @@ import PostDetailsScreen from "../screens/PostDetailsScreen";
 
 export type RootStackParamList = {
 
-  Home: undefined;
+  Home: undefined; //needs no parameters, exists on its own
   PostDetails: { postId: number };
 };
 
