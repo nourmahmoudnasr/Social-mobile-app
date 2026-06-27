@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import colors from '../theme/colors';
+import { getPost, getComments } from '../services/api'; 
 import {
   View, Text, FlatList, StyleSheet,
   ActivityIndicator, Image,
@@ -23,17 +25,16 @@ export default function PostDetailsScreen({ route }: Props) {
 
   useEffect(() => {
     //fetch post and comments in parallel no await
-    fetch(`https://gorest.co.in/public/v2/posts/${postId}`)
-      .then((r) => r.json())
-      .then((data: Post) => setPost(data))
-      .catch(console.error)
-      .finally(() => setLoadingPost(false));
+    getPost(postId)
+    .then((data: Post) => setPost(data))
+    .catch(console.error)
+    .finally(() => setLoadingPost(false));
 
-    fetch(`https://gorest.co.in/public/v2/posts/${postId}/comments`)
-      .then((r) => r.json())
-      .then((data: Comment[]) => setComments(data))
-      .catch(console.error)
-      .finally(() => setLoadingComments(false));
+    getComments(postId)
+    .then((data: Comment[]) => setComments(data))
+    .catch(console.error)
+    .finally(() => setLoadingComments(false));
+
   }, [postId]);
 
   const renderComment = ({ item }: { item: Comment }) => (
@@ -48,7 +49,7 @@ export default function PostDetailsScreen({ route }: Props) {
   );
 
   const ListHeader = () => {
-    if (loadingPost) return <ActivityIndicator size="large" color="#F4A800" style={{ marginTop: 40 }} />;
+    if (loadingPost) return <ActivityIndicator size="large" color={colors.accent} style={{ marginTop: 40 }} />;
     if (!post) return null;
     return (
       <View>
@@ -77,7 +78,7 @@ export default function PostDetailsScreen({ route }: Props) {
           )}
         </View>
 
-        {loadingComments && <ActivityIndicator size="small" color="#F4A800" style={{ marginVertical: 20 }} />}
+        {loadingComments && <ActivityIndicator size="small" color={colors.accent} style={{ marginVertical: 20 }} />}
         {!loadingComments && comments.length === 0 && (
           <View style={styles.empty}>
             <Text style={styles.emptyText}>No comments yet</Text>
@@ -103,23 +104,21 @@ export default function PostDetailsScreen({ route }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A2342',
+    backgroundColor: colors.background,
   },
   content: {
     padding: 16,
     paddingBottom: 40,
   },
-
-  // Post card
   postCard: {
-    backgroundColor: '#0E3460',
+    backgroundColor: colors.surface,
     borderRadius: 14,
     marginBottom: 24,
     overflow: 'hidden',
   },
   cardAccent: {
     height: 4,
-    backgroundColor: '#FF6B35',
+    backgroundColor: colors.accent,
   },
   postCardBody: {
     padding: 16,
@@ -135,37 +134,35 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 21,
     borderWidth: 2,
-    borderColor: '#F4A800',
+    borderColor: colors.avatarBorder,
   },
   userName: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.textPrimary,
   },
   userId: {
     fontSize: 12,
-    color: '#7FBBDE',
+    color: colors.textSecondary,
     marginTop: 1,
   },
   postTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#F4A800',
+    color: colors.textAccent,
     lineHeight: 26,
     marginBottom: 12,
   },
   divider: {
     height: 1,
-    backgroundColor: '#1A3F6F',
+    backgroundColor: colors.divider,
     marginBottom: 12,
   },
   postBody: {
     fontSize: 14,
-    color: '#B8D4E8',
+    color: colors.textPrimary,
     lineHeight: 21,
   },
-
-  // Comments section
   commentsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -175,10 +172,10 @@ const styles = StyleSheet.create({
   commentsTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#F4A800',
+    color: colors.textAccent,
   },
   commentCount: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: colors.badge,
     borderRadius: 12,
     width: 24,
     height: 24,
@@ -187,7 +184,7 @@ const styles = StyleSheet.create({
   },
   commentCountText: {
     fontSize: 12,
-    color: '#FFF',
+    color: colors.textPrimary,
     fontWeight: '700',
   },
   empty: {
@@ -196,13 +193,11 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 15,
-    color: '#7FBBDE',
+    color: colors.textSecondary,
   },
-
-  // Comment card
   commentCard: {
     flexDirection: 'row',
-    backgroundColor: '#0E3460',
+    backgroundColor: colors.surfaceAlt,
     borderRadius: 14,
     padding: 14,
     marginBottom: 10,
@@ -213,7 +208,7 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     borderWidth: 2,
-    borderColor: '#F4A800',
+    borderColor: colors.avatarBorder,
   },
   commentContent: {
     flex: 1,
@@ -222,17 +217,17 @@ const styles = StyleSheet.create({
   commentName: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.textPrimary,
   },
   commentEmail: {
     fontSize: 11,
-    color: '#7FBBDE',
+    color: colors.textSecondary,
     marginTop: 1,
     marginBottom: 6,
   },
   commentBody: {
     fontSize: 14,
-    color: '#B8D4E8',
+    color: colors.textPrimary,
     lineHeight: 21,
   },
 });

@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import colors from '../theme/colors';
+import { getPosts } from '../services/api'; 
 import {
   View,
   Text,
@@ -26,9 +28,8 @@ export default function HomeScreen({ navigation }: Props) {
 
   const fetchPosts = async () => {
     try {
-      const res = await fetch('https://gorest.co.in/public/v2/posts?per_page=20');
-      const data: Post[] = await res.json(); //waiting to fetch the data 
-      setPosts(data); //fil it with the data we fetched
+    const data: Post[] = await getPosts();
+    setPosts(data);
     } catch (e) {
       console.error(e);
     } finally {
@@ -74,7 +75,7 @@ export default function HomeScreen({ navigation }: Props) {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#F4A800" />
+        <ActivityIndicator size="large" color={colors.accent} />
         <Text style={styles.loadingText}>Loading posts...</Text>
       </View>
     );
@@ -89,7 +90,7 @@ export default function HomeScreen({ navigation }: Props) {
       renderItem={renderPost}
       ListHeaderComponent={<Text style={styles.header}>What's happening</Text>}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F4A800" />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />
       }
     />
   );
@@ -98,7 +99,7 @@ export default function HomeScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A2342',
+    backgroundColor: colors.background,
   },
   content: {
     padding: 16,
@@ -107,19 +108,19 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#F4A800',
+    color: colors.textAccent,
     marginBottom: 20,
     marginTop: 8,
   },
   card: {
-    backgroundColor: '#0E3460',
+    backgroundColor: colors.surface,
     borderRadius: 14,
     marginBottom: 16,
     overflow: 'hidden',
   },
   cardAccent: {
     height: 4,
-    backgroundColor: '#FF6B35',
+    backgroundColor: colors.accent,
   },
   cardBody: {
     padding: 16,
@@ -135,44 +136,44 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 21,
     borderWidth: 2,
-    borderColor: '#F4A800',
+    borderColor: colors.avatarBorder,
   },
   userName: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.textPrimary,
   },
   userId: {
     fontSize: 12,
-    color: '#7FBBDE',
+    color: colors.textSecondary,
     marginTop: 1,
   },
   title: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#F4A800',
+    color: colors.textAccent,
     lineHeight: 22,
     marginBottom: 8,
   },
   body: {
     fontSize: 14,
-    color: '#B8D4E8',
+    color: colors.textPrimary,
     lineHeight: 21,
   },
   readMore: {
     marginTop: 14,
     fontSize: 12,
-    color: '#FF6B35',
+    color: colors.accent,
     fontWeight: '600',
   },
   center: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0A2342',
+    backgroundColor: colors.background,
   },
   loadingText: {
-    color: '#7FBBDE',
+    color: colors.textSecondary,
     fontSize: 14,
     marginTop: 10,
   },
