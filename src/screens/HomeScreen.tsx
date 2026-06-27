@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  ScrollView,
+  FlatList,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
@@ -41,6 +41,36 @@ export default function HomeScreen({ navigation }: Props) {
     fetchPosts();
   }, []);
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchPosts();
+  }, []);
+
+  const renderPost = ({ item }: { item: Post }) => (
+    <TouchableOpacity
+      style={styles.card}
+      activeOpacity={0.8}
+      onPress={() => navigation.navigate('PostDetails', { postId: item.id })}
+    >
+      <View style={styles.cardAccent} />
+      <View style={styles.cardBody}>
+        <View style={styles.userRow}>
+          <Image
+            source={{ uri: `${AVATAR_BASE}${item.user_id}` }}
+            style={styles.avatar}
+          />
+          <View>
+            <Text style={styles.userName}>User {item.user_id}</Text>
+            <Text style={styles.userId}>@user_{item.user_id}</Text>
+          </View>
+        </View>
+        <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
+        <Text style={styles.body} numberOfLines={3}>{item.body}</Text>
+        <Text style={styles.readMore}>Tap to read more</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -51,59 +81,24 @@ export default function HomeScreen({ navigation }: Props) {
   }
 
   return (
-    <ScrollView
+    <FlatList
       style={styles.container}
       contentContainerStyle={styles.content}
+      data={posts}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={renderPost}
+      ListHeaderComponent={<Text style={styles.header}>What's happening</Text>}
       refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => { setRefreshing(true); fetchPosts(); }}
-          tintColor="#F4A800"
-        />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F4A800" />
       }
-    >
-      <Text style={styles.header}>What's happening</Text>
-
-      {posts.map((item) => (
-        <TouchableOpacity
-          key={item.id}
-          style={styles.card}
-          activeOpacity={0.8}
-          onPress={() => navigation.navigate('PostDetails', { postId: item.id })}
-        >
-          
-          <View style={styles.cardAccent} />
-
-          <View style={styles.cardBody}>
-            
-            <View style={styles.userRow}>
-              <Image
-                source={{ uri: `${AVATAR_BASE}${item.user_id}` }}
-                style={styles.avatar}
-              />
-              <View>
-                <Text style={styles.userName}>User {item.user_id}</Text>
-                <Text style={styles.userId}>@user_{item.user_id}</Text>
-              </View>
-            </View>
-
-           
-            <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
-            <Text style={styles.body} numberOfLines={3}>{item.body}</Text>
-
-            
-            <Text style={styles.readMore}>Tap to read more</Text>
-          </View>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
+    />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A2342',  
+    backgroundColor: '#0A2342',
   },
   content: {
     padding: 16,
@@ -112,27 +107,23 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#F4A800',         
+    color: '#F4A800',
     marginBottom: 20,
     marginTop: 8,
   },
-
-  // Card
   card: {
-    backgroundColor: '#0E3460',   
+    backgroundColor: '#0E3460',
     borderRadius: 14,
     marginBottom: 16,
     overflow: 'hidden',
   },
   cardAccent: {
     height: 4,
-    backgroundColor: '#FF6B35',   
+    backgroundColor: '#FF6B35',
   },
   cardBody: {
     padding: 16,
   },
-
-  // User row
   userRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -144,7 +135,7 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 21,
     borderWidth: 2,
-    borderColor: '#F4A800',       
+    borderColor: '#F4A800',
   },
   userName: {
     fontSize: 15,
@@ -153,33 +144,27 @@ const styles = StyleSheet.create({
   },
   userId: {
     fontSize: 12,
-    color: '#7FBBDE',   
+    color: '#7FBBDE',
     marginTop: 1,
   },
-
-  // Text
   title: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#F4A800',              
+    color: '#F4A800',
     lineHeight: 22,
     marginBottom: 8,
   },
   body: {
     fontSize: 14,
-    color: '#B8D4E8',             
+    color: '#B8D4E8',
     lineHeight: 21,
   },
-
-  // Footer
   readMore: {
     marginTop: 14,
     fontSize: 12,
-    color: '#FF6B35',          
+    color: '#FF6B35',
     fontWeight: '600',
   },
-
-
   center: {
     flex: 1,
     justifyContent: 'center',
