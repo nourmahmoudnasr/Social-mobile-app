@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import colors from '../theme/colors';
-import { getPost, getComments } from '../services/api'; 
+import React from 'react';
 import {
   View, Text, FlatList, StyleSheet,
   ActivityIndicator, Image,
 } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { Post } from '../types/Post';
 import { Comment } from '../types/Comment';
+import usePosts from '../hooks/usePosts';
+import colors from '../theme/colors';
 
 type Props = {
   route: RouteProp<RootStackParamList, 'PostDetails'>;
@@ -18,24 +17,7 @@ const AVATAR_BASE = 'https://i.pravatar.cc/80?u=';
 
 export default function PostDetailsScreen({ route }: Props) {
   const { postId } = route.params; //we need to know which post to fetch
-  const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [loadingPost, setLoadingPost] = useState(true);
-  const [loadingComments, setLoadingComments] = useState(true);
-
-  useEffect(() => {
-    //fetch post and comments in parallel no await
-    getPost(postId)
-    .then((data: Post) => setPost(data))
-    .catch(console.error)
-    .finally(() => setLoadingPost(false));
-
-    getComments(postId)
-    .then((data: Comment[]) => setComments(data))
-    .catch(console.error)
-    .finally(() => setLoadingComments(false));
-
-  }, [postId]);
+  const { post, comments, loadingPost, loadingComments } = usePosts(postId);
 
   const renderComment = ({ item }: { item: Comment }) => (
     <View style={styles.commentCard}>
@@ -70,7 +52,7 @@ export default function PostDetailsScreen({ route }: Props) {
         </View>
 
         <View style={styles.commentsHeader}>
-          <Text style={styles.commentsTitle}>Comments</Text>
+          <Text style={styles.commentsTitle}>💬 Comments</Text>
           {!loadingComments && (
             <View style={styles.commentCount}>
               <Text style={styles.commentCountText}>{comments.length}</Text>

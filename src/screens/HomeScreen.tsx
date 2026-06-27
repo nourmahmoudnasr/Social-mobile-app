@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import colors from '../theme/colors';
-import { getPosts } from '../services/api'; 
+import React from 'react';
 import {
   View,
   Text,
@@ -14,6 +12,8 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { Post } from '../types/Post';
+import colors from '../theme/colors';
+import usePosts from '../hooks/usePosts';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -22,30 +22,7 @@ type Props = {
 const AVATAR_BASE = 'https://i.pravatar.cc/80?u=';
 
 export default function HomeScreen({ navigation }: Props) {
-  const [posts, setPosts] = useState<Post[]>([]); //empty initially
-  const [loading, setLoading] = useState(true); //initially done
-  const [refreshing, setRefreshing] = useState(false); //on demand
-
-  const fetchPosts = async () => {
-    try {
-    const data: Post[] = await getPosts();
-    setPosts(data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []); 
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    fetchPosts();
-  }, []);
+  const { posts, loading, refreshing, onRefresh } = usePosts();
 
   const renderPost = ({ item }: { item: Post }) => (
     <TouchableOpacity
@@ -90,7 +67,11 @@ export default function HomeScreen({ navigation }: Props) {
       renderItem={renderPost}
       ListHeaderComponent={<Text style={styles.header}>What's happening</Text>}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={colors.accent}
+        />
       }
     />
   );
