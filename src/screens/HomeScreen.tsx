@@ -20,15 +20,15 @@ type Props = {
 const AVATAR_BASE = 'https://i.pravatar.cc/80?u=';
 
 export default function HomeScreen({ navigation }: Props) {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]); //empty initially
+  const [loading, setLoading] = useState(true); //initially done
+  const [refreshing, setRefreshing] = useState(false); //on demand
 
   const fetchPosts = async () => {
     try {
       const res = await fetch('https://gorest.co.in/public/v2/posts?per_page=20');
-      const data: Post[] = await res.json();
-      setPosts(data);
+      const data: Post[] = await res.json(); //waiting to fetch the data 
+      setPosts(data); //fil it with the data we fetched
     } catch (e) {
       console.error(e);
     } finally {
@@ -39,7 +39,7 @@ export default function HomeScreen({ navigation }: Props) {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, []); 
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
