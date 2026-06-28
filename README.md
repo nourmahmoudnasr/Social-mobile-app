@@ -20,7 +20,7 @@ Make sure you have these installed before anything else:
 
 **Windows & Mac:**
 ```bash
-git clone https://github.com/your-username/Social-mobile-app.git
+git clone https://github.com/nourmahmoudnasr/Social-mobile-app.git
 cd Social-mobile-app
 ```
 
