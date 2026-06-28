@@ -1,13 +1,18 @@
 import React from 'react';
 import {
-  View, Text, FlatList, StyleSheet,
-  ActivityIndicator, Image,
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+  Image,
 } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { Comment } from '../types/Comment';
 import usePosts from '../hooks/usePosts';
 import colors from '../theme/colors';
+import CommentCard from '../components/CommentCard';
 
 type Props = {
   route: RouteProp<RootStackParamList, 'PostDetails'>;
@@ -16,51 +21,42 @@ type Props = {
 const AVATAR_BASE = 'https://i.pravatar.cc/80?u=';
 
 export default function PostDetailsScreen({ route }: Props) {
-  const { postId } = route.params; //we need to know which post to fetch
+  const { postId } = route.params;
   const { post, comments, loadingPost, loadingComments } = usePosts(postId);
-
-  const renderComment = ({ item }: { item: Comment }) => (
-    <View style={styles.commentCard}>
-      <Image source={{ uri: `${AVATAR_BASE}${item.email}` }} style={styles.commentAvatar} />
-      <View style={styles.commentContent}>
-        <Text style={styles.commentName}>{item.name}</Text>
-        <Text style={styles.commentEmail}>{item.email}</Text>
-        <Text style={styles.commentBody}>{item.body}</Text>
-      </View>
-    </View>
-  );
 
   const ListHeader = () => {
     if (loadingPost) return <ActivityIndicator size="large" color={colors.accent} style={{ marginTop: 40 }} />;
     if (!post) return null;
+
     return (
       <View>
+        {/* Post Card */}
         <View style={styles.postCard}>
-          <View style={styles.cardAccent} />
-          <View style={styles.postCardBody}>
-            <View style={styles.userRow}>
-              <Image source={{ uri: `${AVATAR_BASE}${post.user_id}` }} style={styles.avatar} />
-              <View>
-                <Text style={styles.userName}>User {post.user_id}</Text>
-                <Text style={styles.userId}>@user_{post.user_id}</Text>
-              </View>
+          <View style={styles.userRow}>
+            <Image source={{ uri: `${AVATAR_BASE}${post.user_id}` }} style={styles.avatar} />
+            <View style={styles.userText}>
+              <Text style={styles.userName}>User {post.user_id}</Text>
+              <Text style={styles.userId}>@user_{post.user_id}</Text>
             </View>
-            <Text style={styles.postTitle}>{post.title}</Text>
-            <View style={styles.divider} />
-            <Text style={styles.postBody}>{post.body}</Text>
           </View>
+          <Text style={styles.postTitle}>{post.title}</Text>
+          <View style={styles.divider} />
+          <Text style={styles.postBody}>{post.body}</Text>
         </View>
 
+        {/* Comments Header */}
         <View style={styles.commentsHeader}>
-          <Text style={styles.commentsTitle}>💬 Comments</Text>
+          <Text style={styles.commentsTitle}>Comments</Text>
           {!loadingComments && (
-            <View style={styles.commentCount}>
-              <Text style={styles.commentCountText}>{comments.length}</Text>
+            <View style={styles.commentBadge}>
+              <Text style={styles.commentBadgeText}>{comments.length}</Text>
             </View>
           )}
         </View>
 
-        {loadingComments && <ActivityIndicator size="small" color={colors.accent} style={{ marginVertical: 20 }} />}
+        {loadingComments && (
+          <ActivityIndicator size="small" color={colors.accent} style={{ marginVertical: 20 }} />
+        )}
         {!loadingComments && comments.length === 0 && (
           <View style={styles.empty}>
             <Text style={styles.emptyText}>No comments yet</Text>
@@ -76,7 +72,7 @@ export default function PostDetailsScreen({ route }: Props) {
       contentContainerStyle={styles.content}
       data={loadingComments ? [] : comments}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={renderComment}
+      renderItem={({ item }: { item: Comment }) => <CommentCard comment={item} />}
       ListHeaderComponent={ListHeader}
       showsVerticalScrollIndicator={false}
     />
@@ -94,29 +90,29 @@ const styles = StyleSheet.create({
   },
   postCard: {
     backgroundColor: colors.surface,
-    borderRadius: 14,
+    borderRadius: 18,
+    padding: 20,
     marginBottom: 24,
-    overflow: 'hidden',
-  },
-  cardAccent: {
-    height: 4,
-    backgroundColor: colors.accent,
-  },
-  postCardBody: {
-    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   userRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
-    gap: 10,
+    marginBottom: 16,
   },
   avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 2,
     borderColor: colors.avatarBorder,
+  },
+  userText: {
+    marginLeft: 12,
   },
   userName: {
     fontSize: 15,
@@ -129,21 +125,22 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   postTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '800',
-    color: colors.textAccent,
-    lineHeight: 26,
-    marginBottom: 12,
+    color: colors.textPrimary,
+    lineHeight: 28,
+    marginBottom: 14,
+    letterSpacing: -0.3,
   },
   divider: {
     height: 1,
     backgroundColor: colors.divider,
-    marginBottom: 12,
+    marginBottom: 14,
   },
   postBody: {
-    fontSize: 14,
-    color: colors.textPrimary,
-    lineHeight: 21,
+    fontSize: 15,
+    color: colors.textSecondary,
+    lineHeight: 24,
   },
   commentsHeader: {
     flexDirection: 'row',
@@ -154,19 +151,18 @@ const styles = StyleSheet.create({
   commentsTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: colors.textAccent,
-  },
-  commentCount: {
-    backgroundColor: colors.badge,
-    borderRadius: 12,
-    width: 24,
-    height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  commentCountText: {
-    fontSize: 12,
     color: colors.textPrimary,
+    letterSpacing: -0.3,
+  },
+  commentBadge: {
+    backgroundColor: colors.accentMuted,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  commentBadgeText: {
+    fontSize: 12,
+    color: colors.accent,
     fontWeight: '700',
   },
   empty: {
@@ -176,40 +172,5 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 15,
     color: colors.textSecondary,
-  },
-  commentCard: {
-    flexDirection: 'row',
-    backgroundColor: colors.surfaceAlt,
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 10,
-    overflow: 'hidden',
-  },
-  commentAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 2,
-    borderColor: colors.avatarBorder,
-  },
-  commentContent: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  commentName: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.textPrimary,
-  },
-  commentEmail: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    marginTop: 1,
-    marginBottom: 6,
-  },
-  commentBody: {
-    fontSize: 14,
-    color: colors.textPrimary,
-    lineHeight: 21,
   },
 });

@@ -3,10 +3,8 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Image,
   RefreshControl,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -14,39 +12,20 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 import { Post } from '../types/Post';
 import colors from '../theme/colors';
 import usePosts from '../hooks/usePosts';
+import PostCard from '../components/PostCard';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
 };
 
-const AVATAR_BASE = 'https://i.pravatar.cc/80?u=';
-
 export default function HomeScreen({ navigation }: Props) {
   const { posts, loading, refreshing, onRefresh } = usePosts();
 
   const renderPost = ({ item }: { item: Post }) => (
-    <TouchableOpacity
-      style={styles.card}
-      activeOpacity={0.8}
+    <PostCard
+      post={item}
       onPress={() => navigation.navigate('PostDetails', { postId: item.id })}
-    >
-      <View style={styles.cardAccent} />
-      <View style={styles.cardBody}>
-        <View style={styles.userRow}>
-          <Image
-            source={{ uri: `${AVATAR_BASE}${item.user_id}` }}
-            style={styles.avatar}
-          />
-          <View>
-            <Text style={styles.userName}>User {item.user_id}</Text>
-            <Text style={styles.userId}>@user_{item.user_id}</Text>
-          </View>
-        </View>
-        <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
-        <Text style={styles.body} numberOfLines={3}>{item.body}</Text>
-        <Text style={styles.readMore}>Tap to read more</Text>
-      </View>
-    </TouchableOpacity>
+    />
   );
 
   if (loading) {
@@ -65,7 +44,12 @@ export default function HomeScreen({ navigation }: Props) {
       data={posts}
       keyExtractor={(item) => item.id.toString()}
       renderItem={renderPost}
-      ListHeaderComponent={<Text style={styles.header}>What's happening</Text>}
+      ListHeaderComponent={
+        <View style={styles.headerBlock}>
+          <Text style={styles.headerLabel}>FEED</Text>
+          <Text style={styles.headerTitle}>What's happening</Text>
+        </View>
+      }
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -73,6 +57,7 @@ export default function HomeScreen({ navigation }: Props) {
           tintColor={colors.accent}
         />
       }
+      showsVerticalScrollIndicator={false}
     />
   );
 }
@@ -86,66 +71,22 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 40,
   },
-  header: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: colors.textAccent,
-    marginBottom: 20,
+  headerBlock: {
+    marginBottom: 22,
     marginTop: 8,
   },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: 14,
-    marginBottom: 16,
-    overflow: 'hidden',
-  },
-  cardAccent: {
-    height: 4,
-    backgroundColor: colors.accent,
-  },
-  cardBody: {
-    padding: 16,
-  },
-  userRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    gap: 10,
-  },
-  avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    borderWidth: 2,
-    borderColor: colors.avatarBorder,
-  },
-  userName: {
-    fontSize: 15,
+  headerLabel: {
+    fontSize: 11,
     fontWeight: '700',
-    color: colors.textPrimary,
-  },
-  userId: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 1,
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.textAccent,
-    lineHeight: 22,
-    marginBottom: 8,
-  },
-  body: {
-    fontSize: 14,
-    color: colors.textPrimary,
-    lineHeight: 21,
-  },
-  readMore: {
-    marginTop: 14,
-    fontSize: 12,
     color: colors.accent,
-    fontWeight: '600',
+    letterSpacing: 1.5,
+    marginBottom: 4,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: colors.textPrimary,
+    letterSpacing: -0.5,
   },
   center: {
     flex: 1,
