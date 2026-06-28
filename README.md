@@ -69,3 +69,9 @@ This will display a **QR code** in your terminal.
 2. Open the **Expo Go** app on your phone
 3. open the camera app and scan the **QR code**
 5. The app will bundle and open on your device
+
+## Screenshots
+
+| Home | Comments | No comments |
+|------|-------------|----------|
+| ![Home Screen](./assets/Screenshots/HomePage.jpg) | ![Post Details](./assets/Screenshots/Post1.jpg) | ![Comments](./assets/Screenshots/Post2.jpg) |
