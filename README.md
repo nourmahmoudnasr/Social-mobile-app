@@ -49,7 +49,7 @@ npx expo install @react-navigation/native-stack
 
 **Windows & Mac:**
 ```bash
-npm install --save-dev typescript @types/react @types/react-native
+npx expo install @react-navigation/native @react-navigation/native-stack -- --legacy-peer-deps
 ```
 
 ### 5. Start the development server
