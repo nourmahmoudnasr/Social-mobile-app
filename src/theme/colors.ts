@@ -1,22 +1,23 @@
 const colors = {
   // Backgrounds
-  background: '#0F1923',
-  surface: '#1A2736',
-  surfaceAlt: '#243447',
+  background: '#F7F8FA',
+  surface: '#FFFFFF',
+  surfaceAlt: '#F0F2F5',
 
   // Accent
-  accent: '#E8734A',
-  accentMuted: '#3D2820',
+  accent: '#5B6EF5',
+  accentMuted: '#EEF0FE',
 
   // Text
-  textPrimary: '#F0EDE8',
-  textSecondary: '#8A9BB0',
-  textAccent: '#E8734A',
+  textPrimary: '#1A1D23',
+  textSecondary: '#8891A5',
+  textAccent: '#5B6EF5',
 
   // UI
-  divider: '#1F2F3F',
-  avatarBorder: '#E8734A',
-  badge: '#E8734A',
+  divider: '#EAECF0',
+  avatarBorder: '#E0E3F8',
+  badge: '#EEF0FE',
+  badgeText: '#5B6EF5',
 };
 
 export default colors;
